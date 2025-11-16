@@ -39,7 +39,6 @@ render_header('Login');
             <input type="password" name="password" required placeholder="Passwort eingeben">
         </label>
         <button class="button primary" type="submit">Login</button>
-        <p class="muted">Noch kein Konto? <a href="/register.php">Jetzt registrieren</a>.</p>
     </form>
 </section>
 <?php

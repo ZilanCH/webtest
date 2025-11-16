@@ -5,33 +5,11 @@ require_admin();
 $users = load_users();
 $featured = load_featured();
 $message = '';
-$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? 'featured';
-    if ($action === 'create_user') {
-        $result = register_user(
-            [
-                'email' => $_POST['email'] ?? '',
-                'name' => $_POST['name'] ?? '',
-                'password' => $_POST['password'] ?? '',
-                'title' => $_POST['title'] ?? '',
-                'bio' => $_POST['bio'] ?? '',
-            ],
-            $_POST['role'] ?? 'member'
-        );
-
-        if ($result['success']) {
-            $users = load_users();
-            $message = 'Neuer Nutzer angelegt: ' . htmlspecialchars($_POST['email']);
-        } else {
-            $error = $result['message'];
-        }
-    } else {
-        $featured = array_keys($_POST['featured'] ?? []);
-        save_featured($featured);
-        $message = 'Featured-Liste aktualisiert.';
-    }
+    $featured = array_keys($_POST['featured'] ?? []);
+    save_featured($featured);
+    $message = 'Featured-Liste aktualisiert.';
 }
 
 render_header('Admin');
@@ -41,20 +19,17 @@ render_header('Admin');
         <div>
             <p class="eyebrow">Dashboard</p>
             <h1>Admin-Bereich</h1>
-            <p class="lede">Verwalte Accounts, lege neue Nutzer an und steuere, wer auf der Startseite erscheint.</p>
+            <p class="lede">Verwalte Accounts und steuere, wer auf der Startseite erscheint.</p>
         </div>
         <div class="badge">Admin</div>
     </div>
     <?php if ($message): ?>
-        <div class="alert success"><?php echo $message; ?></div>
-    <?php endif; ?>
-    <?php if ($error): ?>
-        <div class="alert"><?php echo htmlspecialchars($error); ?></div>
+        <div class="alert success"><?php echo htmlspecialchars($message); ?></div>
     <?php endif; ?>
     <form method="post" class="admin-grid">
         <div>
             <h3>Accounts</h3>
-            <p class="muted">Login-Daten werden in <code>data/users.json</code> abgelegt. Hier kannst du Demo-User hinzufügen.</p>
+            <p class="muted">Login-Daten sind dateibasiert hinterlegt. Für eine Demo genügt ein Reload.</p>
             <ul class="list">
                 <?php foreach ($users as $user): ?>
                     <li class="list-item">
@@ -85,51 +60,6 @@ render_header('Admin');
             </div>
             <button class="button primary" type="submit">Featured aktualisieren</button>
         </div>
-    </form>
-</section>
-
-<section class="panel narrow">
-    <div class="panel-header">
-        <div>
-            <p class="eyebrow">Account anlegen</p>
-            <h2>Neuen Nutzer erstellen</h2>
-            <p class="lede">Erfasse manuell neue Team-Mitglieder mit Rolle und Profiltext.</p>
-        </div>
-    </div>
-    <form class="form" method="post">
-        <input type="hidden" name="action" value="create_user">
-        <div class="grid-two">
-            <label>
-                <span>Name</span>
-                <input type="text" name="name" required placeholder="Vor- und Nachname" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
-            </label>
-            <label>
-                <span>E-Mail</span>
-                <input type="email" name="email" required placeholder="person@zilandev.com" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
-            </label>
-        </div>
-        <div class="grid-two">
-            <label>
-                <span>Passwort</span>
-                <input type="password" name="password" required placeholder="Sicheres Passwort wählen">
-            </label>
-            <label>
-                <span>Rolle</span>
-                <select name="role">
-                    <option value="member" <?php echo (($_POST['role'] ?? '') === 'admin') ? '' : 'selected'; ?>>member</option>
-                    <option value="admin" <?php echo (($_POST['role'] ?? '') === 'admin') ? 'selected' : ''; ?>>admin</option>
-                </select>
-            </label>
-        </div>
-        <label>
-            <span>Funktion</span>
-            <input type="text" name="title" placeholder="Product Manager" value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
-        </label>
-        <label>
-            <span>Bio</span>
-            <textarea name="bio" rows="3" placeholder="Kurzbeschreibung"><?php echo htmlspecialchars($_POST['bio'] ?? ''); ?></textarea>
-        </label>
-        <button class="button primary" type="submit">Nutzer speichern</button>
     </form>
 </section>
 <?php

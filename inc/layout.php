@@ -25,7 +25,6 @@ function render_header(string $title = 'ZilanGroup'): void
         <nav class="nav-links">
             <a href="/index.php">Home</a>
             <a href="/login.php">Login</a>
-            <a href="/register.php">Registrieren</a>
             <a href="/admin.php" class="nav-cta">Admin</a>
         </nav>
         <div class="user-chip">
@@ -60,4 +59,3 @@ function render_footer(): void
     </html>
     <?php
 }
-?>

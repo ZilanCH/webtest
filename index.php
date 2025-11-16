@@ -13,8 +13,7 @@ render_header('Home');
         <h1>Digitale Lösungen mit Charakter</h1>
         <p class="lede">Strategische Plattformen, sichere Logins und präzise Nutzersteuerung in einem eleganten Interface.</p>
         <div class="cta-row">
-            <a class="button primary" href="/register.php">Jetzt registrieren</a>
-            <a class="button ghost" href="/login.php">Einloggen</a>
+            <a class="button primary" href="/login.php">Jetzt einloggen</a>
             <a class="button ghost" href="/admin.php">Admin-Dashboard</a>
         </div>
         <div class="meta">Brand Insights inspiriert von <a href="https://zilan.dev" target="_blank" rel="noreferrer">zilan.dev</a></div>
