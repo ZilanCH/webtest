@@ -14,7 +14,7 @@ function render_header(string $title = 'ZilanGroup'): void
         <link rel="stylesheet" href="/public/css/style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     </head>
     <body>
     <header class="topbar">
@@ -25,8 +25,7 @@ function render_header(string $title = 'ZilanGroup'): void
         <nav class="nav-links">
             <a href="/index.php">Home</a>
             <a href="/login.php">Login</a>
-            <a href="/register.php">Registrieren</a>
-            <a href="/admin.php" class="stealth-link" aria-label="Admin">System</a>
+            <a href="/admin.php" class="nav-cta">Admin</a>
         </nav>
         <div class="user-chip">
             <?php if ($user): ?>
@@ -48,14 +47,15 @@ function render_footer(): void
     ?>
     </main>
     <footer class="footer">
-        <div class="footnote">©️ZilanGroup 2025 - [Rechtliches](https://legal.zilan.dev)</div>
+        <div>
+            <strong>ZilanGroup</strong> &mdash; Digitale Lösungen inspiriert von <a href="https://zilan.dev" target="_blank" rel="noreferrer">zilan.dev</a>
+        </div>
         <div class="footer-links">
             <a href="mailto:hello@zilandev.com">Kontakt</a>
-            <a href="https://zilan.dev" target="_blank" rel="noreferrer">Insights</a>
+            <a href="https://zilan.dev" target="_blank" rel="noreferrer">Website</a>
         </div>
     </footer>
     </body>
     </html>
     <?php
 }
-?>
