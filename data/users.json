@@ -1,0 +1,34 @@
+[
+  {
+    "email": "admin@zilandev.com",
+    "password_hash": "$2y$12$SAQoNao4vorGPxWBuBNZx.Mx62sIbg65/tA77lWGPlMXKGzl8Gjm2",
+    "name": "Zilan Admin",
+    "role": "admin",
+    "title": "Head of Operations",
+    "bio": "Leading innovation and partnerships across the ZilanGroup network."
+  },
+  {
+    "email": "daria@zilandev.com",
+    "password_hash": "$2y$12$De7DIUci6AVzbNsV4jmItubrHrVjSsM7LDrjDArNlYwxe8NGLjxWC",
+    "name": "Daria Miles",
+    "role": "member",
+    "title": "Product Manager",
+    "bio": "Architecting products that translate customer needs into digital experiences."
+  },
+  {
+    "email": "liam@zilandev.com",
+    "password_hash": "$2y$12$LIhZheYffPT9er6Pu18UlOX7Rn7SzuNpY2AVSuJ1mM9LW9WZuEoA6",
+    "name": "Liam Chen",
+    "role": "member",
+    "title": "Cloud Engineer",
+    "bio": "Designing resilient infrastructure for data-driven organizations."
+  },
+  {
+    "email": "sofia@zilandev.com",
+    "password_hash": "$2y$12$2DLloQ8Wf0WviFMUBwwj1uj.iz25KnoAs8tHR7Jp43XkOk4OJzbau",
+    "name": "Sofia Martins",
+    "role": "member",
+    "title": "UX Strategist",
+    "bio": "Championing human-centric design across enterprise journeys."
+  }
+]
