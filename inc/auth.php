@@ -1,17 +1,59 @@
 <?php
 session_start();
 
+function user_storage_path(): string
+{
+    return __DIR__ . '/../data/users.json';
+}
+
+function seed_users(): array
+{
+    $phpSeed = __DIR__ . '/../data/users.php';
+    if (!file_exists($phpSeed)) {
+        return [];
+    }
+
+    $seed = include $phpSeed;
+    $users = array_map(function ($user) {
+        return [
+            'email' => strtolower($user['email']),
+            'password_hash' => password_hash($user['password'], PASSWORD_DEFAULT),
+            'name' => $user['name'],
+            'role' => $user['role'] ?? 'member',
+            'title' => $user['title'] ?? '',
+            'bio' => $user['bio'] ?? '',
+        ];
+    }, $seed);
+
+    save_users($users);
+    return $users;
+}
+
 function load_users(): array
 {
-    $users = include __DIR__ . '/../data/users.php';
-    return array_map(function ($user) {
-        $user['password_hash'] = password_hash($user['password'], PASSWORD_DEFAULT);
-        return $user;
-    }, $users);
+    $path = user_storage_path();
+    if (!file_exists($path)) {
+        return seed_users();
+    }
+
+    $json = file_get_contents($path);
+    $users = json_decode($json, true);
+    if (!is_array($users)) {
+        return seed_users();
+    }
+
+    return $users;
+}
+
+function save_users(array $users): void
+{
+    $payload = json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    file_put_contents(user_storage_path(), $payload);
 }
 
 function find_user_by_email(string $email): ?array
 {
+    $email = strtolower(trim($email));
     foreach (load_users() as $user) {
         if (strcasecmp($user['email'], $email) === 0) {
             return $user;
@@ -27,14 +69,33 @@ function authenticate(string $email, string $password): ?array
         return null;
     }
 
-    // We hash on the fly to avoid storing sensitive data in files
-    if (password_verify($password, $user['password_hash'])) {
-        unset($user['password_hash']);
-        unset($user['password']);
-        return $user;
+    $hash = $user['password_hash'] ?? null;
+    if (!$hash && isset($user['password'])) {
+        $hash = password_hash($user['password'], PASSWORD_DEFAULT);
+        $user['password_hash'] = $hash;
+
+        $users = load_users();
+        foreach ($users as &$storedUser) {
+            if (strcasecmp($storedUser['email'], $user['email']) === 0) {
+                $storedUser['password_hash'] = $hash;
+                unset($storedUser['password']);
+                break;
+            }
+        }
+        save_users($users);
+    }
+
+    if ($hash && password_verify($password, $hash)) {
+        return safe_user($user);
     }
 
     return null;
+}
+
+function safe_user(array $user): array
+{
+    unset($user['password_hash'], $user['password']);
+    return $user;
 }
 
 function require_login(): void
@@ -77,3 +138,74 @@ function save_featured(array $emails): void
     $payload = json_encode(['featured' => $emails], JSON_PRETTY_PRINT);
     file_put_contents($path, $payload);
 }
+
+function normalize_role(string $role): string
+{
+    return in_array($role, ['admin', 'member'], true) ? $role : 'member';
+}
+
+function update_user_fields(string $email, array $fields): bool
+{
+    $users = load_users();
+    $found = false;
+
+    foreach ($users as &$user) {
+        if (strcasecmp($user['email'], $email) === 0) {
+            if (isset($fields['role'])) {
+                $user['role'] = normalize_role($fields['role']);
+            }
+            if (isset($fields['title'])) {
+                $user['title'] = $fields['title'];
+            }
+            if (isset($fields['bio'])) {
+                $user['bio'] = $fields['bio'];
+            }
+            $found = true;
+            break;
+        }
+    }
+
+    if ($found) {
+        save_users($users);
+    }
+
+    return $found;
+}
+
+function register_user(array $data, string $role = 'member'): array
+{
+    $email = strtolower(trim($data['email'] ?? ''));
+    $name = trim($data['name'] ?? '');
+    $password = $data['password'] ?? '';
+    $title = trim($data['title'] ?? '');
+    $bio = trim($data['bio'] ?? '');
+    $role = normalize_role($role);
+
+    if (!$email || !$name || !$password) {
+        return ['success' => false, 'message' => 'E-Mail, Name und Passwort sind erforderlich.'];
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'message' => 'Bitte eine gültige E-Mail-Adresse angeben.'];
+    }
+
+    if (find_user_by_email($email)) {
+        return ['success' => false, 'message' => 'Es existiert bereits ein Account mit dieser E-Mail.'];
+    }
+
+    $newUser = [
+        'email' => $email,
+        'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+        'name' => $name,
+        'role' => $role,
+        'title' => $title,
+        'bio' => $bio,
+    ];
+
+    $users = load_users();
+    $users[] = $newUser;
+    save_users($users);
+
+    return ['success' => true, 'user' => safe_user($newUser)];
+}
+?>
